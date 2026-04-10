@@ -11,20 +11,37 @@ interface Product {
   status: string
 }
 
-export default async function ProductLanding({ params }: { params: { slug: string } }) {
-  // Fetch product by slug
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('slug', params.slug)
-    .single()
+export default async function ProductLanding({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
   
-  if (error || !data) {
+  let data: Product | null = null
+  let fetchError = false
+  let errorMessage = ''
+  
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    console.error('[DEBUG] env vars:', url ? 'URL present' : 'URL MISSING', key ? 'KEY present' : 'KEY MISSING')
+    
+    const result = await supabase
+      .from('products')
+      .select('*')
+      .eq('slug', slug)
+      .single()
+    console.error('[DEBUG] supabase result:', JSON.stringify(result))
+    data = result.data as Product | null
+  } catch (e: any) {
+    fetchError = true
+    errorMessage = e?.message || String(e)
+    console.error('[DEBUG] fetch error:', errorMessage)
+  }
+  
+  if (fetchError || !data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center p-8 max-w-md">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Product Not Found</h1>
-          <p className="text-gray-600">The product you're looking for doesn't exist.</p>
+          <p className="text-gray-600">The product you are looking for does not exist.</p>
         </div>
       </div>
     )
@@ -32,14 +49,12 @@ export default async function ProductLanding({ params }: { params: { slug: strin
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-gray-900">{data.name}</h1>
         </div>
       </header>
 
-      {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 mb-6">Coming Soon</h2>
@@ -48,7 +63,6 @@ export default async function ProductLanding({ params }: { params: { slug: strin
           </p>
         </div>
 
-        {/* Waitlist Form */}
         <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8 mb-12">
           <h3 className="text-2xl font-semibold text-gray-900 mb-6">Join the Waitlist</h3>
           <p className="text-gray-600 mb-6">
@@ -78,7 +92,6 @@ export default async function ProductLanding({ params }: { params: { slug: strin
           </form>
         </div>
 
-        {/* Product Details */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">Problem Statement</h3>
@@ -109,7 +122,6 @@ export default async function ProductLanding({ params }: { params: { slug: strin
           </div>
         </div>
 
-        {/* Status */}
         <div className="text-center">
           <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
             data.status === 'researching' ? 'bg-gray-200 text-gray-800' :
@@ -124,7 +136,6 @@ export default async function ProductLanding({ params }: { params: { slug: strin
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="bg-white border-t">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
           <p className="text-center text-sm text-gray-500">
