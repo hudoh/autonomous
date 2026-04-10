@@ -1,26 +1,68 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --navy: #0f2942;
+  --amber: #f59e0b;
+  --white: #ffffff;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-gray-50 text-gray-900;
+}
+
+/* Custom styles for the AUTONOMOUS theme */
+nav {
+  @apply bg-navy text-white;
+}
+
+.btn-primary {
+  @apply bg-amber text-navy font-bold py-2 px-4 rounded hover:bg-opacity-90;
+}
+
+.btn-secondary {
+  @apply bg-white text-navy font-bold py-2 px-4 rounded border border-navy hover:bg-gray-100;
+}
+
+.card {
+  @apply bg-white rounded-lg shadow-sm p-6;
+}
+
+.badge {
+  @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+/* Status badges */
+.badge-researching {
+  @apply bg-gray-200 text-gray-800;
+}
+
+.badge-developing {
+  @apply bg-blue-200 text-blue-800;
+}
+
+.badge-testing {
+  @apply bg-yellow-200 text-yellow-800;
+}
+
+.badge-launching {
+  @apply bg-purple-200 text-purple-800;
+}
+
+.badge-live {
+  @apply bg-green-200 text-green-800;
+}
+
+/* Sentiment badges */
+.badge-positive {
+  @apply bg-green-200 text-green-800;
+}
+
+.badge-neutral {
+  @apply bg-gray-200 text-gray-800;
+}
+
+.badge-negative {
+  @apply bg-red-200 text-red-800;
 }
