@@ -28,7 +28,7 @@ export default function Board() {
 
   // Check password when it changes
   useEffect(() => {
-    const validPassword = process.env.NEXT_PUBLIC_BOARD_PASSWORD || 'board_password'
+    const validPassword = (process.env.NEXT_PUBLIC_BOARD_PASSWORD || 'board_password').trim()
     if (!password) {
       setAuthError('')
       setIsAuthenticated(false)
