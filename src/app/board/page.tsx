@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
 
 interface BoardDecision {
   id: string
@@ -20,18 +19,26 @@ interface Product {
 }
 
 export default function Board() {
-  const router = useRouter()
   const [decisions, setDecisions] = useState<BoardDecision[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [password, setPassword] = useState('')
   const [authError, setAuthError] = useState('')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  // Check if user is authenticated (simple check for demo)
+  // Check password when it changes
   useEffect(() => {
-    const isAuthenticated = process.env.NEXT_PUBLIC_BOARD_PASSWORD === password
-    if (!isAuthenticated) {
-      setAuthError('Please enter the board password to access this page')
+    if (!password) {
+      setAuthError('')
+      setIsAuthenticated(false)
+      return
+    }
+    if (password === process.env.NEXT_PUBLIC_BOARD_PASSWORD) {
+      setIsAuthenticated(true)
+      setAuthError('')
+    } else {
+      setAuthError('Incorrect password. Please try again.')
+      setIsAuthenticated(false)
     }
   }, [password])
 
@@ -131,19 +138,21 @@ export default function Board() {
   }
 
   // Simple authentication - in real app would be more robust
-  if (authError) {
+  if (!isAuthenticated) {
     return (
       <div className="p-8 max-w-md mx-auto">
         <h1 className="text-3xl font-bold mb-6">Board Access</h1>
         <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <p className="text-red-600 mb-4">{authError}</p>
+          {authError && <p className="text-red-600 mb-4">{authError}</p>}
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter board password"
             className="w-full px-3 py-2 border rounded-md mb-4"
+            autoFocus
           />
+
         </div>
       </div>
     )
